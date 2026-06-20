@@ -1,0 +1,30 @@
+# Visual Studio / .NET build output
+.vs/
+bin/
+obj/
+work/
+outputs/
+
+# Codex workspace/runtime artifacts
+.agents/
+.codex-remote-attachments/
+
+# User-specific project files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Published application packages
+*.zip
+*.msi
+*.nupkg
+
+# OS files
+Thumbs.db
+Desktop.ini
