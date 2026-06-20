@@ -1,5 +1,5 @@
 <Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
-Partial Class Form1
+Partial Class SMASchedulerForm
     Inherits System.Windows.Forms.Form
 
     <System.Diagnostics.DebuggerNonUserCode()>
@@ -561,7 +561,7 @@ Partial Class Form1
         _status.Size = New Size(50, 20)
         _status.Text = "Ready"
         ' 
-        ' Form1
+        ' SMASchedulerForm
         ' 
         AutoScaleDimensions = New SizeF(8.0F, 20.0F)
         AutoScaleMode = AutoScaleMode.Font
@@ -574,7 +574,7 @@ Partial Class Form1
         Font = New Font("Segoe UI", 9.0F)
         Margin = New Padding(3, 4, 3, 4)
         MinimumSize = New Size(1323, 891)
-        Name = "Form1"
+        Name = "SMASchedulerForm"
         Text = "SMA Scheduler"
         commandBar.ResumeLayout(False)
         commandBar.PerformLayout()

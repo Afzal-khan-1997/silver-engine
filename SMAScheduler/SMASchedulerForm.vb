@@ -4,7 +4,7 @@ Imports System.Globalization
 Imports System.IO
 Imports System.Text.Json
 
-Public Class Form1
+Public Class SMASchedulerForm
     Private ReadOnly _tasks As New BindingList(Of ScheduleTask)
     Private ReadOnly _engine As New ScheduleEngine()
     Private ReadOnly _plannerSync As New PlannerSyncService()
