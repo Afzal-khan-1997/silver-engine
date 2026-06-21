@@ -28,6 +28,7 @@ CREATE TABLE dbo.SmaScheduleTasks
     FinishDate DATE NOT NULL,
     PercentComplete INT NOT NULL,
     Predecessors NVARCHAR(200) NULL,
+    DependencyType NVARCHAR(2) NOT NULL DEFAULT 'FS',
     AssignedTo NVARCHAR(200) NULL,
     AssignmentDate DATE NULL,
     ResourceNames NVARCHAR(500) NULL,

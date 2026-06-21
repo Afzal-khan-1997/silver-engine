@@ -11,6 +11,7 @@ Public Class ScheduleTask
     Private _finishDate As Date = Date.Today
     Private _percentComplete As Integer
     Private _predecessors As String = ""
+    Private _dependencyType As String = "FS"
     Private _assignedTo As String = ""
     Private _assignmentDate As Date = Date.Today
     Private _resourceNames As String = ""
@@ -123,6 +124,19 @@ Public Class ScheduleTask
         End Set
     End Property
 
+    Public Property DependencyType As String
+        Get
+            Return _dependencyType
+        End Get
+        Set(value As String)
+            Dim safeValue = NormalizeDependencyType(value)
+            If _dependencyType <> safeValue Then
+                _dependencyType = safeValue
+                Notify(NameOf(DependencyType))
+            End If
+        End Set
+    End Property
+
     Public Property AssignedTo As String
         Get
             Return _assignedTo
@@ -229,4 +243,14 @@ Public Class ScheduleTask
     Private Sub Notify(propertyName As String)
         RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(propertyName))
     End Sub
+
+    Private Shared Function NormalizeDependencyType(value As String) As String
+        Dim safeValue = If(value, "").Trim().ToUpperInvariant()
+        Select Case safeValue
+            Case "SS", "FF", "SF"
+                Return safeValue
+            Case Else
+                Return "FS"
+        End Select
+    End Function
 End Class

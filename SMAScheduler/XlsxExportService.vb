@@ -11,7 +11,7 @@ Public Class XlsxExportService
             New List(Of Object) From {"Project Name", projectName},
             New List(Of Object) From {"Version", versionNumber},
             New List(Of Object)(),
-            New List(Of Object) From {"Task ID", "Database Task ID", "Task Name", "Assigned To", "Resource Allocations", "Resource Hours", "Assignment Date", "Start Date", "Finish Date", "Duration Days", "Percent Complete", "Predecessors", "Module ID"}
+            New List(Of Object) From {"Task ID", "Database Task ID", "Task Name", "Assigned To", "Resource Allocations", "Resource Hours", "Assignment Date", "Start Date", "Finish Date", "Duration Days", "Percent Complete", "Predecessors", "Link Type", "Module ID"}
         }
 
         For Each task In tasks
@@ -28,6 +28,7 @@ Public Class XlsxExportService
                      task.DurationDays,
                      task.PercentComplete,
                      task.Predecessors,
+                     task.DependencyType,
                      task.ModuleId})
         Next
 

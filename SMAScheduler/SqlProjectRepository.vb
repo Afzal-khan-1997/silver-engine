@@ -25,7 +25,7 @@ Public Class SqlProjectRepository
 
             For Each task In tasks
                 Execute(connection,
-                        "INSERT INTO dbo.SmaScheduleTasks (ProjectId, TaskId, DatabaseTaskId, TaskName, StartDate, DurationDays, FinishDate, PercentComplete, Predecessors, AssignedTo, AssignmentDate, ResourceNames, ResourceAllocations, ResourceHours, ModuleId, PlannerTaskId) VALUES (@ProjectId, @TaskId, @DatabaseTaskId, @TaskName, @StartDate, @DurationDays, @FinishDate, @PercentComplete, @Predecessors, @AssignedTo, @AssignmentDate, @ResourceNames, @ResourceAllocations, @ResourceHours, @ModuleId, @PlannerTaskId)",
+                        "INSERT INTO dbo.SmaScheduleTasks (ProjectId, TaskId, DatabaseTaskId, TaskName, StartDate, DurationDays, FinishDate, PercentComplete, Predecessors, DependencyType, AssignedTo, AssignmentDate, ResourceNames, ResourceAllocations, ResourceHours, ModuleId, PlannerTaskId) VALUES (@ProjectId, @TaskId, @DatabaseTaskId, @TaskName, @StartDate, @DurationDays, @FinishDate, @PercentComplete, @Predecessors, @DependencyType, @AssignedTo, @AssignmentDate, @ResourceNames, @ResourceAllocations, @ResourceHours, @ModuleId, @PlannerTaskId)",
                         New Dictionary(Of String, Object) From {
                             {"@ProjectId", projectId},
                             {"@TaskId", task.TaskId},
@@ -36,6 +36,7 @@ Public Class SqlProjectRepository
                             {"@FinishDate", task.FinishDate},
                             {"@PercentComplete", task.PercentComplete},
                             {"@Predecessors", task.Predecessors},
+                            {"@DependencyType", task.DependencyType},
                             {"@AssignedTo", task.AssignedTo},
                             {"@AssignmentDate", task.AssignmentDate},
                             {"@ResourceNames", task.ResourceNames},
@@ -55,7 +56,7 @@ Public Class SqlProjectRepository
             EnsureSchema(connection)
 
             Using command = connection.CreateCommand()
-                command.CommandText = "SELECT t.TaskId, t.DatabaseTaskId, t.TaskName, t.StartDate, t.DurationDays, t.FinishDate, t.PercentComplete, t.Predecessors, t.AssignedTo, t.AssignmentDate, t.ResourceNames, t.ResourceAllocations, t.ResourceHours, t.ModuleId, t.PlannerTaskId FROM dbo.SmaScheduleTasks t INNER JOIN dbo.SmaScheduleProjects p ON p.ProjectId = t.ProjectId WHERE p.ProjectName = @ProjectName ORDER BY t.TaskId"
+                command.CommandText = "SELECT t.TaskId, t.DatabaseTaskId, t.TaskName, t.StartDate, t.DurationDays, t.FinishDate, t.PercentComplete, t.Predecessors, t.DependencyType, t.AssignedTo, t.AssignmentDate, t.ResourceNames, t.ResourceAllocations, t.ResourceHours, t.ModuleId, t.PlannerTaskId FROM dbo.SmaScheduleTasks t INNER JOIN dbo.SmaScheduleProjects p ON p.ProjectId = t.ProjectId WHERE p.ProjectName = @ProjectName ORDER BY t.TaskId"
                 AddParameter(command, "@ProjectName", projectName)
 
                 Using reader = command.ExecuteReader()
@@ -69,6 +70,7 @@ Public Class SqlProjectRepository
                             .FinishDate = CDate(reader("FinishDate")),
                             .PercentComplete = CInt(reader("PercentComplete")),
                             .Predecessors = If(reader("Predecessors") Is DBNull.Value, "", CStr(reader("Predecessors"))),
+                            .DependencyType = If(reader("DependencyType") Is DBNull.Value, "FS", CStr(reader("DependencyType"))),
                             .AssignedTo = If(reader("AssignedTo") Is DBNull.Value, "", CStr(reader("AssignedTo"))),
                             .AssignmentDate = If(reader("AssignmentDate") Is DBNull.Value, CDate(reader("StartDate")), CDate(reader("AssignmentDate"))),
                             .ResourceNames = If(reader("ResourceNames") Is DBNull.Value, "", CStr(reader("ResourceNames"))),
@@ -108,7 +110,10 @@ Public Class SqlProjectRepository
                 "IF OBJECT_ID('dbo.SmaScheduleProjects', 'U') IS NULL CREATE TABLE dbo.SmaScheduleProjects (ProjectId INT IDENTITY(1,1) NOT NULL PRIMARY KEY, ProjectName NVARCHAR(200) NOT NULL UNIQUE, ProjectVersion NVARCHAR(50) NOT NULL DEFAULT '1.0', TotalProjectHours DECIMAL(12,2) NOT NULL DEFAULT 0, ResourcesNeeded INT NOT NULL DEFAULT 0, ResourceHours DECIMAL(12,2) NOT NULL DEFAULT 0, CreatedAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(), UpdatedAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME())",
                 Nothing)
         Execute(connection,
-                "IF OBJECT_ID('dbo.SmaScheduleTasks', 'U') IS NULL CREATE TABLE dbo.SmaScheduleTasks (Id INT IDENTITY(1,1) NOT NULL PRIMARY KEY, ProjectId INT NOT NULL, TaskId INT NOT NULL, DatabaseTaskId INT NULL, TaskName NVARCHAR(300) NOT NULL, StartDate DATE NOT NULL, DurationDays DECIMAL(12,3) NOT NULL, FinishDate DATE NOT NULL, PercentComplete INT NOT NULL, Predecessors NVARCHAR(200) NULL, AssignedTo NVARCHAR(200) NULL, AssignmentDate DATE NULL, ResourceNames NVARCHAR(500) NULL, ResourceAllocations NVARCHAR(1000) NULL, ResourceHours DECIMAL(12,2) NOT NULL DEFAULT 0, ModuleId INT NULL, PlannerTaskId NVARCHAR(200) NULL, CONSTRAINT FK_SmaScheduleTasks_Project FOREIGN KEY(ProjectId) REFERENCES dbo.SmaScheduleProjects(ProjectId), CONSTRAINT UQ_SmaScheduleTasks_Project_Task UNIQUE(ProjectId, TaskId))",
+                "IF OBJECT_ID('dbo.SmaScheduleTasks', 'U') IS NULL CREATE TABLE dbo.SmaScheduleTasks (Id INT IDENTITY(1,1) NOT NULL PRIMARY KEY, ProjectId INT NOT NULL, TaskId INT NOT NULL, DatabaseTaskId INT NULL, TaskName NVARCHAR(300) NOT NULL, StartDate DATE NOT NULL, DurationDays DECIMAL(12,3) NOT NULL, FinishDate DATE NOT NULL, PercentComplete INT NOT NULL, Predecessors NVARCHAR(200) NULL, DependencyType NVARCHAR(2) NOT NULL DEFAULT 'FS', AssignedTo NVARCHAR(200) NULL, AssignmentDate DATE NULL, ResourceNames NVARCHAR(500) NULL, ResourceAllocations NVARCHAR(1000) NULL, ResourceHours DECIMAL(12,2) NOT NULL DEFAULT 0, ModuleId INT NULL, PlannerTaskId NVARCHAR(200) NULL, CONSTRAINT FK_SmaScheduleTasks_Project FOREIGN KEY(ProjectId) REFERENCES dbo.SmaScheduleProjects(ProjectId), CONSTRAINT UQ_SmaScheduleTasks_Project_Task UNIQUE(ProjectId, TaskId))",
+                Nothing)
+        Execute(connection,
+                "IF OBJECT_ID('dbo.SmaScheduleTasks', 'U') IS NOT NULL AND COL_LENGTH('dbo.SmaScheduleTasks', 'DependencyType') IS NULL ALTER TABLE dbo.SmaScheduleTasks ADD DependencyType NVARCHAR(2) NOT NULL CONSTRAINT DF_SmaScheduleTasks_DependencyType DEFAULT 'FS'",
                 Nothing)
     End Sub
 

@@ -11,6 +11,7 @@ Public Class ScheduleEngine
         For Each task In tasks
             task.DurationDays = Math.Max(0D, task.DurationDays)
             task.PercentComplete = Math.Min(100, Math.Max(0, task.PercentComplete))
+            task.DependencyType = NormalizeDependencyType(task.DependencyType)
             task.StartDate = NextWorkingDate(task.StartDate)
             task.AssignmentDate = NextWorkingDate(task.AssignmentDate)
         Next
@@ -26,12 +27,12 @@ Public Class ScheduleEngine
 
         For Each task In tasks
             Dim suggestedStart = NextWorkingDate(task.StartDate)
-            For Each predecessorId In ParsePredecessors(task.Predecessors)
-                If predecessorId <> task.TaskId AndAlso byId.ContainsKey(predecessorId) Then
-                    Dim predecessor = byId(predecessorId)
-                    Dim predecessorReadyDate = NextWorkingDate(predecessor.FinishDate)
-                    If predecessorReadyDate > suggestedStart Then
-                        suggestedStart = predecessorReadyDate
+            For Each dependency In ParseDependencies(task.Predecessors, task.DependencyType)
+                If dependency.PredecessorId <> task.TaskId AndAlso byId.ContainsKey(dependency.PredecessorId) Then
+                    Dim predecessor = byId(dependency.PredecessorId)
+                    Dim dependencyStart = RequiredStartForDependency(task, predecessor, dependency.LinkType)
+                    If dependencyStart > suggestedStart Then
+                        suggestedStart = dependencyStart
                     End If
                 End If
             Next
@@ -44,19 +45,67 @@ Public Class ScheduleEngine
     End Sub
 
     Public Function ParsePredecessors(value As String) As List(Of Integer)
-        Dim result As New List(Of Integer)
+        Return ParseDependencies(value, "FS").
+            Select(Function(dependency) dependency.PredecessorId).
+            Distinct().
+            ToList()
+    End Function
+
+    Public Function ParseDependencies(value As String, defaultDependencyType As String) As List(Of ScheduleDependency)
+        Dim result As New List(Of ScheduleDependency)
         If String.IsNullOrWhiteSpace(value) Then
             Return result
         End If
 
         For Each part In value.Split({","c, ";"c, " "c}, StringSplitOptions.RemoveEmptyEntries)
-            Dim parsed As Integer
-            If Integer.TryParse(part.Trim(), parsed) AndAlso parsed > 0 AndAlso Not result.Contains(parsed) Then
-                result.Add(parsed)
+            Dim dependency = ParseDependencyToken(part.Trim(), defaultDependencyType)
+            If dependency IsNot Nothing AndAlso Not result.Any(Function(item) item.PredecessorId = dependency.PredecessorId) Then
+                result.Add(dependency)
             End If
         Next
 
         Return result
+    End Function
+
+    Private Function ParseDependencyToken(value As String, defaultDependencyType As String) As ScheduleDependency
+        If String.IsNullOrWhiteSpace(value) Then
+            Return Nothing
+        End If
+
+        Dim index = 0
+        While index < value.Length AndAlso Char.IsDigit(value(index))
+            index += 1
+        End While
+
+        If index = 0 Then
+            Return Nothing
+        End If
+
+        Dim predecessorId As Integer
+        If Not Integer.TryParse(value.Substring(0, index), predecessorId) OrElse predecessorId <= 0 Then
+            Return Nothing
+        End If
+
+        Dim linkType = NormalizeDependencyType(defaultDependencyType)
+        Dim suffix = value.Substring(index).Trim().TrimStart("-"c, ":"c).ToUpperInvariant()
+        If suffix.Length >= 2 Then
+            linkType = NormalizeDependencyType(suffix.Substring(0, 2))
+        End If
+
+        Return New ScheduleDependency With {.PredecessorId = predecessorId, .LinkType = linkType}
+    End Function
+
+    Private Function RequiredStartForDependency(task As ScheduleTask, predecessor As ScheduleTask, linkType As String) As Date
+        Select Case NormalizeDependencyType(linkType)
+            Case "SS"
+                Return NextWorkingDate(predecessor.StartDate)
+            Case "FF"
+                Return StartForWorkingFinish(predecessor.FinishDate, task.DurationDays)
+            Case "SF"
+                Return StartForWorkingFinish(predecessor.StartDate, task.DurationDays)
+            Case Else
+                Return NextWorkingDate(predecessor.FinishDate)
+        End Select
     End Function
 
     Private Function AddWorkingDays(startDate As Date, durationDays As Decimal) As Date
@@ -65,6 +114,20 @@ Public Class ScheduleEngine
 
         While remainingDays > 1
             currentDate = currentDate.AddDays(1)
+            If Not IsBlockedDate(currentDate) Then
+                remainingDays -= 1
+            End If
+        End While
+
+        Return currentDate
+    End Function
+
+    Private Function StartForWorkingFinish(finishDate As Date, durationDays As Decimal) As Date
+        Dim currentDate = PreviousOrSameWorkingDate(finishDate)
+        Dim remainingDays = Math.Max(1, CInt(Math.Ceiling(durationDays)))
+
+        While remainingDays > 1
+            currentDate = currentDate.AddDays(-1)
             If Not IsBlockedDate(currentDate) Then
                 remainingDays -= 1
             End If
@@ -200,8 +263,31 @@ Public Class ScheduleEngine
         Return currentDate
     End Function
 
+    Private Function PreviousOrSameWorkingDate(value As Date) As Date
+        Dim currentDate = value.Date
+        While IsBlockedDate(currentDate)
+            currentDate = currentDate.AddDays(-1)
+        End While
+        Return currentDate
+    End Function
+
+    Private Shared Function NormalizeDependencyType(value As String) As String
+        Dim safeValue = If(value, "").Trim().ToUpperInvariant()
+        Select Case safeValue
+            Case "SS", "FF", "SF"
+                Return safeValue
+            Case Else
+                Return "FS"
+        End Select
+    End Function
+
     Private Function IsBlockedDate(value As Date) As Boolean
         Return value.DayOfWeek = DayOfWeek.Sunday OrElse
             (value.DayOfWeek = DayOfWeek.Saturday AndAlso Not IncludeSaturdays)
     End Function
+End Class
+
+Public Class ScheduleDependency
+    Public Property PredecessorId As Integer
+    Public Property LinkType As String = "FS"
 End Class

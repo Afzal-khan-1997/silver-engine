@@ -150,6 +150,8 @@ Public Class ProjectLibraryService
                         Continue For
                     End If
 
+                    Dim hasDependencyType = row.Count >= 14
+
                     snapshot.Tasks.Add(New ScheduleTask With {
                         .TaskId = CInt(DecimalCellValue(row(0))),
                         .DatabaseTaskId = CInt(DecimalCellValue(row(1))),
@@ -164,7 +166,8 @@ Public Class ProjectLibraryService
                         .DurationDays = DecimalCellValue(row(9)),
                         .PercentComplete = CInt(DecimalCellValue(row(10))),
                         .Predecessors = Convert.ToString(row(11), CultureInfo.InvariantCulture),
-                        .ModuleId = CInt(DecimalCellValue(row(12)))
+                        .DependencyType = If(hasDependencyType, Convert.ToString(row(12), CultureInfo.InvariantCulture), "FS"),
+                        .ModuleId = CInt(DecimalCellValue(row(If(hasDependencyType, 13, 12))))
                     })
                 Next
 
