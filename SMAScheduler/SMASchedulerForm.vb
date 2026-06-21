@@ -33,6 +33,9 @@ Public Class SMASchedulerForm
     Private _plannerLegendGrid As DataGridView
     Private _plannerTaskCountLabel As Label
     Private _plannerDurationLabel As Label
+    Private _themeSelector As ComboBox
+    Private _themeLabel As Label
+    Private _currentTheme As SchedulerThemePalette = SchedulerThemePalette.ThemeByName("Fresh")
     Private ReadOnly _capacityDateColumns As New Dictionary(Of Integer, Date)
     Private _isRecalculating As Boolean
     Private _isLoadingCatalogControls As Boolean
@@ -113,6 +116,8 @@ Public Class SMASchedulerForm
         AddGridColumns()
         _grid.DataSource = _tasks
         ApplySchedulerHeaderLayout()
+        ConfigureThemeSelector()
+        ApplyTheme()
         AddHandler _grid.SelectionChanged, AddressOf ScheduleSelectionChanged
         AddHandler btnNew.Click, AddressOf NewProject
         AddHandler btnOpen.Click, AddressOf OpenProjectFile
@@ -133,6 +138,38 @@ Public Class SMASchedulerForm
         AddHandler _projectSizeSelector.SelectedIndexChanged, AddressOf CatalogSelectionChanged
     End Sub
 
+    Private Sub ConfigureThemeSelector()
+        If _themeSelector Is Nothing Then
+            _themeLabel = New Label With {
+                .AutoSize = True,
+                .Text = "Theme",
+                .Location = New Point(865, 42),
+                .Name = "_themeLabel"
+            }
+            _themeSelector = New ComboBox With {
+                .DropDownStyle = ComboBoxStyle.DropDownList,
+                .Location = New Point(865, 66),
+                .Name = "_themeSelector",
+                .Size = New Size(164, 28)
+            }
+            _themeSelector.Items.AddRange(SchedulerThemePalette.AllNames())
+            _themeSelector.SelectedItem = _currentTheme.Name
+            headerPanel.Controls.Add(_themeLabel)
+            headerPanel.Controls.Add(_themeSelector)
+            AddHandler _themeSelector.SelectedIndexChanged, AddressOf ThemeSelectionChanged
+        End If
+    End Sub
+
+    Private Sub ThemeSelectionChanged(sender As Object, e As EventArgs)
+        Dim selectedName = Convert.ToString(_themeSelector.SelectedItem, CultureInfo.InvariantCulture)
+        _currentTheme = SchedulerThemePalette.ThemeByName(selectedName)
+        ApplyTheme()
+        _gantt.Invalidate()
+        If _plannerPieChart IsNot Nothing Then
+            _plannerPieChart.Invalidate()
+        End If
+    End Sub
+
     Private Sub ApplySchedulerHeaderLayout()
         If resourcesNeededLabel.Parent IsNot Nothing Then
             resourcesNeededLabel.Parent.Controls.Remove(resourcesNeededLabel)
@@ -146,6 +183,77 @@ Public Class SMASchedulerForm
         btnSchedulePlanner.Location = New Point(650, 58)
         btnSchedulePlanner.Size = New Size(190, 38)
         btnSchedulePlanner.Font = New Font("Segoe UI Semibold", 9.0F)
+    End Sub
+
+    Private Sub ApplyTheme()
+        Dim theme = _currentTheme
+        BackColor = theme.WindowBack
+        commandBar.BackColor = theme.CommandBack
+        For Each item As ToolStripItem In commandBar.Items
+            item.ForeColor = theme.CommandText
+        Next
+
+        headerPanel.BackColor = theme.HeaderBack
+        appTitle.ForeColor = theme.Text
+        btnSchedulePlanner.BackColor = theme.Action
+        btnSchedulePlanner.ForeColor = Color.White
+        If _themeLabel IsNot Nothing Then
+            _themeLabel.ForeColor = theme.MutedText
+        End If
+
+        For Each label In {projectLabel, versionLabel, totalHoursLabel, taskCatalogLabel, projectSizeLabel, resourcesNeededLabel}
+            If label IsNot Nothing Then
+                label.ForeColor = theme.MutedText
+            End If
+        Next
+
+        _summaryTitle.BackColor = theme.TileOne
+        _summaryDates.BackColor = theme.TileTwo
+        _summaryProgress.BackColor = theme.TileThree
+        _summaryResources.BackColor = theme.TileFour
+        For Each label In {_summaryTitle, _summaryDates, _summaryProgress, _summaryResources}
+            label.ForeColor = theme.Text
+        Next
+
+        contentSplit.BackColor = theme.Divider
+        mainSplit.BackColor = theme.Divider
+        _detailsPanel.BackColor = theme.PanelBack
+        taskWorkspaceTitle.ForeColor = theme.Text
+        statusBar.BackColor = theme.PanelBack
+        _status.ForeColor = theme.MutedText
+        _gantt.BackColor = theme.PanelBack
+
+        ApplyGridTheme(_grid, theme)
+        If _capacityGrid IsNot Nothing Then
+            ApplyGridTheme(_capacityGrid, theme)
+        End If
+        If _plannerLegendGrid IsNot Nothing Then
+            ApplyGridTheme(_plannerLegendGrid, theme)
+        End If
+        For Each label In {_plannerTaskCountLabel, _plannerDurationLabel}
+            If label IsNot Nothing Then
+                label.BackColor = theme.TileThree
+                label.ForeColor = theme.Text
+            End If
+        Next
+    End Sub
+
+    Private Sub ApplyGridTheme(grid As DataGridView, theme As SchedulerThemePalette)
+        If grid Is Nothing Then
+            Return
+        End If
+
+        grid.BackgroundColor = theme.PanelBack
+        grid.GridColor = theme.GridLine
+        grid.ColumnHeadersDefaultCellStyle.BackColor = theme.GridHeader
+        grid.ColumnHeadersDefaultCellStyle.ForeColor = Color.White
+        grid.ColumnHeadersDefaultCellStyle.Font = New Font("Segoe UI Semibold", 9.0F)
+        grid.DefaultCellStyle.BackColor = theme.PanelBack
+        grid.DefaultCellStyle.ForeColor = theme.Text
+        grid.DefaultCellStyle.SelectionBackColor = theme.Selection
+        grid.DefaultCellStyle.SelectionForeColor = theme.Text
+        grid.AlternatingRowsDefaultCellStyle.BackColor = theme.AlternatingRow
+        grid.EnableHeadersVisualStyles = False
     End Sub
 
     Private Sub LoadCatalogControls()
@@ -1619,6 +1727,121 @@ Public Class ProjectSnapshot
     Public Property ResourceHours As Decimal
     Public Property Tasks As New List(Of ScheduleTask)
     Public Property UpdatedOn As Date
+End Class
+
+Public Class SchedulerThemePalette
+    Public Property Name As String = ""
+    Public Property WindowBack As Color
+    Public Property PanelBack As Color
+    Public Property HeaderBack As Color
+    Public Property CommandBack As Color
+    Public Property CommandText As Color
+    Public Property GridHeader As Color
+    Public Property GridLine As Color
+    Public Property Selection As Color
+    Public Property AlternatingRow As Color
+    Public Property Text As Color
+    Public Property MutedText As Color
+    Public Property Action As Color
+    Public Property Divider As Color
+    Public Property TileOne As Color
+    Public Property TileTwo As Color
+    Public Property TileThree As Color
+    Public Property TileFour As Color
+
+    Public Shared Function AllNames() As Object()
+        Return Themes().Select(Function(theme) CObj(theme.Name)).ToArray()
+    End Function
+
+    Public Shared Function ThemeByName(themeName As String) As SchedulerThemePalette
+        Dim selected = Themes().FirstOrDefault(Function(theme) String.Equals(theme.Name, themeName, StringComparison.OrdinalIgnoreCase))
+        Return If(selected, Themes().First())
+    End Function
+
+    Private Shared Function Themes() As List(Of SchedulerThemePalette)
+        Return New List(Of SchedulerThemePalette) From {
+            New SchedulerThemePalette With {
+                .Name = "Fresh",
+                .WindowBack = Color.FromArgb(244, 246, 249),
+                .PanelBack = Color.White,
+                .HeaderBack = Color.FromArgb(229, 241, 255),
+                .CommandBack = Color.FromArgb(35, 46, 66),
+                .CommandText = Color.White,
+                .GridHeader = Color.FromArgb(35, 46, 66),
+                .GridLine = Color.FromArgb(232, 236, 242),
+                .Selection = Color.FromArgb(219, 235, 255),
+                .AlternatingRow = Color.FromArgb(250, 252, 255),
+                .Text = Color.FromArgb(24, 31, 42),
+                .MutedText = Color.FromArgb(75, 85, 99),
+                .Action = Color.FromArgb(32, 164, 112),
+                .Divider = Color.FromArgb(224, 229, 236),
+                .TileOne = Color.FromArgb(223, 245, 232),
+                .TileTwo = Color.FromArgb(255, 243, 205),
+                .TileThree = Color.FromArgb(225, 239, 255),
+                .TileFour = Color.FromArgb(248, 222, 234)
+            },
+            New SchedulerThemePalette With {
+                .Name = "Sunrise",
+                .WindowBack = Color.FromArgb(250, 247, 242),
+                .PanelBack = Color.FromArgb(255, 253, 250),
+                .HeaderBack = Color.FromArgb(255, 235, 214),
+                .CommandBack = Color.FromArgb(95, 55, 50),
+                .CommandText = Color.White,
+                .GridHeader = Color.FromArgb(95, 55, 50),
+                .GridLine = Color.FromArgb(236, 226, 214),
+                .Selection = Color.FromArgb(255, 223, 186),
+                .AlternatingRow = Color.FromArgb(255, 250, 245),
+                .Text = Color.FromArgb(48, 38, 35),
+                .MutedText = Color.FromArgb(102, 82, 75),
+                .Action = Color.FromArgb(212, 95, 56),
+                .Divider = Color.FromArgb(231, 216, 202),
+                .TileOne = Color.FromArgb(225, 245, 232),
+                .TileTwo = Color.FromArgb(255, 232, 190),
+                .TileThree = Color.FromArgb(221, 238, 255),
+                .TileFour = Color.FromArgb(255, 218, 226)
+            },
+            New SchedulerThemePalette With {
+                .Name = "Mint",
+                .WindowBack = Color.FromArgb(241, 248, 246),
+                .PanelBack = Color.White,
+                .HeaderBack = Color.FromArgb(215, 242, 235),
+                .CommandBack = Color.FromArgb(26, 82, 83),
+                .CommandText = Color.White,
+                .GridHeader = Color.FromArgb(26, 82, 83),
+                .GridLine = Color.FromArgb(220, 236, 234),
+                .Selection = Color.FromArgb(202, 238, 230),
+                .AlternatingRow = Color.FromArgb(248, 253, 252),
+                .Text = Color.FromArgb(25, 43, 45),
+                .MutedText = Color.FromArgb(71, 96, 97),
+                .Action = Color.FromArgb(42, 157, 143),
+                .Divider = Color.FromArgb(205, 225, 223),
+                .TileOne = Color.FromArgb(211, 245, 229),
+                .TileTwo = Color.FromArgb(255, 241, 194),
+                .TileThree = Color.FromArgb(218, 234, 255),
+                .TileFour = Color.FromArgb(240, 222, 255)
+            },
+            New SchedulerThemePalette With {
+                .Name = "Graphite",
+                .WindowBack = Color.FromArgb(241, 243, 245),
+                .PanelBack = Color.FromArgb(252, 252, 253),
+                .HeaderBack = Color.FromArgb(232, 235, 239),
+                .CommandBack = Color.FromArgb(42, 45, 52),
+                .CommandText = Color.White,
+                .GridHeader = Color.FromArgb(42, 45, 52),
+                .GridLine = Color.FromArgb(224, 228, 234),
+                .Selection = Color.FromArgb(225, 233, 246),
+                .AlternatingRow = Color.FromArgb(248, 249, 251),
+                .Text = Color.FromArgb(24, 27, 32),
+                .MutedText = Color.FromArgb(89, 96, 107),
+                .Action = Color.FromArgb(50, 132, 120),
+                .Divider = Color.FromArgb(212, 218, 226),
+                .TileOne = Color.FromArgb(220, 240, 230),
+                .TileTwo = Color.FromArgb(255, 239, 201),
+                .TileThree = Color.FromArgb(226, 236, 251),
+                .TileFour = Color.FromArgb(244, 225, 235)
+            }
+        }
+    End Function
 End Class
 
 Public Class BlankNumericUpDown
