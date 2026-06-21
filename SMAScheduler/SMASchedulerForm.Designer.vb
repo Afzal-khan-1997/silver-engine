@@ -31,8 +31,6 @@ Partial Class SMASchedulerForm
         btnLink = New ToolStripButton()
         btnUnlink = New ToolStripButton()
         btnMilestone = New ToolStripButton()
-        sepPlanner = New ToolStripSeparator()
-        btnPlanner = New ToolStripButton()
         headerPanel = New Panel()
         appTitle = New Label()
         projectLabel = New Label()
@@ -188,19 +186,6 @@ Partial Class SMASchedulerForm
         btnMilestone.Name = "btnMilestone"
         btnMilestone.Size = New Size(78, 24)
         btnMilestone.Text = "Milestone"
-        ' 
-        ' sepPlanner
-        ' 
-        sepPlanner.Name = "sepPlanner"
-        sepPlanner.Size = New Size(6, 27)
-        ' 
-        ' btnPlanner
-        ' 
-        btnPlanner.DisplayStyle = ToolStripItemDisplayStyle.Text
-        btnPlanner.ForeColor = Color.White
-        btnPlanner.Name = "btnPlanner"
-        btnPlanner.Size = New Size(117, 24)
-        btnPlanner.Text = "Planner Preview"
         ' 
         ' headerPanel
         ' 
@@ -612,8 +597,6 @@ Partial Class SMASchedulerForm
     Friend WithEvents btnLink As ToolStripButton
     Friend WithEvents btnUnlink As ToolStripButton
     Friend WithEvents btnMilestone As ToolStripButton
-    Friend WithEvents sepPlanner As ToolStripSeparator
-    Friend WithEvents btnPlanner As ToolStripButton
     Friend WithEvents btnSchedulePlanner As Button
     Friend WithEvents headerPanel As Panel
     Friend WithEvents appTitle As Label

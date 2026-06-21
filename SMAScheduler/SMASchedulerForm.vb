@@ -7,7 +7,6 @@ Imports System.Text.Json
 Public Class SMASchedulerForm
     Private ReadOnly _tasks As New BindingList(Of ScheduleTask)
     Private ReadOnly _engine As New ScheduleEngine()
-    Private ReadOnly _plannerSync As New PlannerSyncService()
     Private ReadOnly _taskCatalogService As New TaskCatalogService()
     Private ReadOnly _employeeCatalogService As New EmployeeCatalogService()
     Private ReadOnly _xlsxExportService As New XlsxExportService()
@@ -664,17 +663,6 @@ Public Class SMASchedulerForm
             End If
 
             LoadProjectSnapshot(snapshot)
-        End Using
-    End Sub
-
-    Private Sub PreviewPlannerSync(sender As Object, e As EventArgs)
-        If _tasks.Count = 0 Then
-            MessageBox.Show(Me, "There is no task assigned for the project.", "Planner Preview", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            Return
-        End If
-
-        Using preview As New PlannerPreviewForm(_projectName.Text, _tasks.ToList())
-            preview.ShowDialog(Me)
         End Using
     End Sub
 
