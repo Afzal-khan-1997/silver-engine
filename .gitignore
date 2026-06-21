@@ -4,6 +4,7 @@ bin/
 obj/
 work/
 outputs/
+SMAScheduler48/
 
 # Codex workspace/runtime artifacts
 .agents/
