@@ -438,17 +438,16 @@ Public Class SMASchedulerForm
         _grid.Columns.Add(New CalendarColumn With {.DataPropertyName = NameOf(ScheduleTask.StartDate), .HeaderText = "Start", .Width = 104})
         _grid.Columns.Add(New CalendarColumn With {.DataPropertyName = NameOf(ScheduleTask.FinishDate), .HeaderText = "Finish", .Width = 104})
         _grid.Columns.Add(New DataGridViewTextBoxColumn With {.DataPropertyName = NameOf(ScheduleTask.PercentComplete), .HeaderText = "%", .Width = 52})
-        _grid.Columns.Add(New DataGridViewTextBoxColumn With {.DataPropertyName = NameOf(ScheduleTask.Predecessors), .HeaderText = "Predecessors", .Width = 108})
-        Dim linkTypeColumn As New DataGridViewComboBoxColumn With {
-            .DataPropertyName = NameOf(ScheduleTask.DependencyType),
-            .HeaderText = "Link Type",
-            .Width = 90,
+        Dim predecessorColumn As New DataGridViewComboBoxColumn With {
+            .DataPropertyName = NameOf(ScheduleTask.PredecessorLink),
+            .HeaderText = "Predecessors",
+            .Width = 108,
             .FlatStyle = FlatStyle.Flat,
             .DisplayStyle = DataGridViewComboBoxDisplayStyle.ComboBox,
             .ValueType = GetType(String)
         }
-        linkTypeColumn.Items.AddRange("FS", "SS", "FF", "SF")
-        _grid.Columns.Add(linkTypeColumn)
+        predecessorColumn.Items.AddRange("", "FS", "SS", "FF", "SF")
+        _grid.Columns.Add(predecessorColumn)
         _grid.Columns.Add(New ResourceChecklistColumn(_employees) With {.DataPropertyName = NameOf(ScheduleTask.AssignedTo), .HeaderText = "Assigned To", .Width = 210})
         _grid.Columns.Add(New CalendarColumn With {.DataPropertyName = NameOf(ScheduleTask.AssignmentDate), .HeaderText = "Assign Date", .Width = 104})
         _grid.Columns.Add(New DataGridViewTextBoxColumn With {.DataPropertyName = NameOf(ScheduleTask.ResourceHours), .HeaderText = "Resource Hours", .Width = 108, .ValueType = GetType(Decimal), .DefaultCellStyle = New DataGridViewCellStyle With {.Format = "0.##"}})
@@ -803,7 +802,7 @@ Public Class SMASchedulerForm
             Case NameOf(ScheduleTask.AssignmentDate)
                 task.AssignmentDate = NormalizePickedWorkingDate(task.AssignmentDate)
 
-            Case NameOf(ScheduleTask.DependencyType)
+            Case NameOf(ScheduleTask.DependencyType), NameOf(ScheduleTask.PredecessorLink)
                 task.DependencyType = NormalizeDependencyType(task.DependencyType)
 
             Case NameOf(ScheduleTask.ResourceHours)
@@ -1404,6 +1403,7 @@ Public Class SMASchedulerForm
             propertyName = NameOf(ScheduleTask.FinishDate) OrElse
             propertyName = NameOf(ScheduleTask.DurationDays) OrElse
             propertyName = NameOf(ScheduleTask.DependencyType) OrElse
+            propertyName = NameOf(ScheduleTask.PredecessorLink) OrElse
             propertyName = NameOf(ScheduleTask.AssignedTo) OrElse
             propertyName = NameOf(ScheduleTask.AssignmentDate) OrElse
             propertyName = NameOf(ScheduleTask.ResourceHours)

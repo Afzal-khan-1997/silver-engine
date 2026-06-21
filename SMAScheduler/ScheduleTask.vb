@@ -120,6 +120,7 @@ Public Class ScheduleTask
             If _predecessors <> safeValue Then
                 _predecessors = safeValue
                 Notify(NameOf(Predecessors))
+                Notify(NameOf(PredecessorLink))
             End If
         End Set
     End Property
@@ -133,7 +134,20 @@ Public Class ScheduleTask
             If _dependencyType <> safeValue Then
                 _dependencyType = safeValue
                 Notify(NameOf(DependencyType))
+                Notify(NameOf(PredecessorLink))
             End If
+        End Set
+    End Property
+
+    Public Property PredecessorLink As String
+        Get
+            If String.IsNullOrWhiteSpace(_predecessors) Then
+                Return ""
+            End If
+            Return _dependencyType
+        End Get
+        Set(value As String)
+            DependencyType = value
         End Set
     End Property
 
