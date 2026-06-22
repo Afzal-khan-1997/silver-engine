@@ -19,8 +19,6 @@ Public Class SMASchedulerForm
     Private _plannerLegendGrid As DataGridView
     Private _plannerTaskCountLabel As Label
     Private _plannerDurationLabel As Label
-    Private _themeSelector As ComboBox
-    Private _themeLabel As Label
     Private _currentTheme As SchedulerThemePalette = SchedulerThemePalette.ThemeByName("Fresh")
     Private ReadOnly _capacityDateColumns As New Dictionary(Of Integer, Date)
     Private _isRecalculating As Boolean
@@ -102,7 +100,6 @@ Public Class SMASchedulerForm
         AddGridColumns()
         _grid.DataSource = _tasks
         ApplySchedulerHeaderLayout()
-        ConfigureThemeSelector()
         ApplyTheme()
         AddHandler _grid.SelectionChanged, AddressOf ScheduleSelectionChanged
         AddHandler btnNew.Click, AddressOf NewProject
@@ -116,6 +113,7 @@ Public Class SMASchedulerForm
         AddHandler btnLink.Click, AddressOf LinkSelectedTask
         AddHandler btnUnlink.Click, AddressOf UnlinkSelectedTask
         AddHandler btnMilestone.Click, AddressOf ToggleMilestone
+        AddHandler btnChangeTheme.Click, AddressOf ChangeTheme
         AddHandler btnSchedulePlanner.Click, AddressOf ScheduleTasksThroughMsPlanner
         AddHandler _totalProjectHours.ValueChanged, AddressOf ProjectInputsChanged
         AddHandler _resourcesNeeded.ValueChanged, AddressOf ProjectInputsChanged
@@ -124,36 +122,21 @@ Public Class SMASchedulerForm
         AddHandler _projectSizeSelector.SelectedIndexChanged, AddressOf CatalogSelectionChanged
     End Sub
 
-    Private Sub ConfigureThemeSelector()
-        If _themeSelector Is Nothing Then
-            _themeLabel = New Label With {
-                .AutoSize = True,
-                .Text = "Theme",
-                .Location = New Point(865, 42),
-                .Name = "_themeLabel"
-            }
-            _themeSelector = New ComboBox With {
-                .DropDownStyle = ComboBoxStyle.DropDownList,
-                .Location = New Point(865, 66),
-                .Name = "_themeSelector",
-                .Size = New Size(164, 28)
-            }
-            _themeSelector.Items.AddRange(SchedulerThemePalette.AllNames())
-            _themeSelector.SelectedItem = _currentTheme.Name
-            headerPanel.Controls.Add(_themeLabel)
-            headerPanel.Controls.Add(_themeSelector)
-            AddHandler _themeSelector.SelectedIndexChanged, AddressOf ThemeSelectionChanged
+    Private Sub ChangeTheme(sender As Object, e As EventArgs)
+        Dim themeNames = SchedulerThemePalette.AllNames().Select(Function(name) Convert.ToString(name, CultureInfo.InvariantCulture)).ToList()
+        If themeNames.Count = 0 Then
+            Return
         End If
-    End Sub
 
-    Private Sub ThemeSelectionChanged(sender As Object, e As EventArgs)
-        Dim selectedName = Convert.ToString(_themeSelector.SelectedItem, CultureInfo.InvariantCulture)
-        _currentTheme = SchedulerThemePalette.ThemeByName(selectedName)
+        Dim currentIndex = themeNames.FindIndex(Function(name) String.Equals(name, _currentTheme.Name, StringComparison.OrdinalIgnoreCase))
+        Dim nextIndex = If(currentIndex < 0, 0, (currentIndex + 1) Mod themeNames.Count)
+        _currentTheme = SchedulerThemePalette.ThemeByName(themeNames(nextIndex))
         ApplyTheme()
         _gantt.Invalidate()
         If _plannerPieChart IsNot Nothing Then
             _plannerPieChart.Invalidate()
         End If
+        SetStatus("Theme changed to " & _currentTheme.Name)
     End Sub
 
     Private Sub ApplySchedulerHeaderLayout()
@@ -183,9 +166,6 @@ Public Class SMASchedulerForm
         appTitle.ForeColor = theme.Text
         btnSchedulePlanner.BackColor = theme.Action
         btnSchedulePlanner.ForeColor = Color.White
-        If _themeLabel IsNot Nothing Then
-            _themeLabel.ForeColor = theme.MutedText
-        End If
 
         For Each label In {projectLabel, versionLabel, totalHoursLabel, taskCatalogLabel, projectSizeLabel, resourcesNeededLabel}
             If label IsNot Nothing Then

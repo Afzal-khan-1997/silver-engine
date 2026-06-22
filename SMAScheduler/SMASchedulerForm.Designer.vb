@@ -31,6 +31,8 @@ Partial Class SMASchedulerForm
         btnLink = New ToolStripButton()
         btnUnlink = New ToolStripButton()
         btnMilestone = New ToolStripButton()
+        sepTheme = New ToolStripSeparator()
+        btnChangeTheme = New ToolStripButton()
         headerPanel = New Panel()
         appTitle = New Label()
         projectLabel = New Label()
@@ -82,7 +84,7 @@ Partial Class SMASchedulerForm
         commandBar.BackColor = Color.FromArgb(CByte(35), CByte(46), CByte(66))
         commandBar.GripStyle = ToolStripGripStyle.Hidden
         commandBar.ImageScalingSize = New Size(18, 18)
-        commandBar.Items.AddRange(New ToolStripItem() {btnNew, btnOpen, btnSave, btnRefreshCapacity, sepFile, btnAddTask, btnDelete, btnMoveUp, btnMoveDown, sepTasks, btnLink, btnUnlink, btnMilestone})
+        commandBar.Items.AddRange(New ToolStripItem() {btnNew, btnOpen, btnSave, btnRefreshCapacity, sepFile, btnAddTask, btnDelete, btnMoveUp, btnMoveDown, sepTasks, btnLink, btnUnlink, btnMilestone, sepTheme, btnChangeTheme})
         commandBar.Location = New Point(0, 0)
         commandBar.Name = "commandBar"
         commandBar.Padding = New Padding(11, 9, 11, 9)
@@ -186,6 +188,19 @@ Partial Class SMASchedulerForm
         btnMilestone.Name = "btnMilestone"
         btnMilestone.Size = New Size(78, 24)
         btnMilestone.Text = "Milestone"
+        ' 
+        ' sepTheme
+        ' 
+        sepTheme.Name = "sepTheme"
+        sepTheme.Size = New Size(6, 27)
+        ' 
+        ' btnChangeTheme
+        ' 
+        btnChangeTheme.DisplayStyle = ToolStripItemDisplayStyle.Text
+        btnChangeTheme.ForeColor = Color.White
+        btnChangeTheme.Name = "btnChangeTheme"
+        btnChangeTheme.Size = New Size(113, 24)
+        btnChangeTheme.Text = "Change Theme"
         ' 
         ' headerPanel
         ' 
@@ -597,6 +612,8 @@ Partial Class SMASchedulerForm
     Private btnLink As ToolStripButton
     Private btnUnlink As ToolStripButton
     Private btnMilestone As ToolStripButton
+    Private sepTheme As ToolStripSeparator
+    Private btnChangeTheme As ToolStripButton
     Private btnSchedulePlanner As Button
     Private headerPanel As Panel
     Private appTitle As Label
