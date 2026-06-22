@@ -14,20 +14,6 @@ Public Class SMASchedulerForm
     Private ReadOnly _taskCatalog As New BindingList(Of TaskCatalogItem)
     Private ReadOnly _employees As New BindingList(Of String)
 
-    Private WithEvents _grid As DataGridView
-    Private _gantt As GanttPanel
-    Private _status As ToolStripStatusLabel
-    Private _projectName As TextBox
-    Private _versionNumber As TextBox
-    Private _summaryTitle As Label
-    Private _summaryDates As Label
-    Private _summaryProgress As Label
-    Private _summaryResources As Label
-    Private _detailsPanel As Panel
-    Private _taskCatalogSelector As ComboBox
-    Private _projectSizeSelector As ComboBox
-    Private _includeSaturdays As CheckBox
-    Private _remainingHoursLabel As Label
     Private _capacityGrid As DataGridView
     Private _plannerPieChart As PlannerPieChartPanel
     Private _plannerLegendGrid As DataGridView

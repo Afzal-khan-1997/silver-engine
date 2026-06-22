@@ -610,8 +610,22 @@ Partial Class SMASchedulerForm
     Private taskCatalogLabel As Label
     Private taskWorkspaceTitle As Label
     Private statusBar As StatusStrip
+    Private _projectName As TextBox
+    Private _versionNumber As TextBox
     Private _totalProjectHours As BlankNumericUpDown
+    Private _taskCatalogSelector As ComboBox
+    Private _projectSizeSelector As ComboBox
+    Private _includeSaturdays As CheckBox
+    Private _summaryTitle As Label
+    Private _summaryDates As Label
+    Private _summaryProgress As Label
+    Private _summaryResources As Label
     Private _resourcesNeeded As BlankNumericUpDown
+    Private _remainingHoursLabel As Label
+    Private WithEvents _grid As DataGridView
+    Private _gantt As GanttPanel
+    Private _detailsPanel As Panel
+    Private _status As ToolStripStatusLabel
 End Class
 
 
