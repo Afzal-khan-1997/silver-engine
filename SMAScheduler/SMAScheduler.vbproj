@@ -4,7 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net9.0-windows</TargetFramework>
     <RootNamespace>SMAScheduler</RootNamespace>
-    <StartupObject>Sub Main</StartupObject>
+    <StartupObject>SMAScheduler.Program</StartupObject>
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
