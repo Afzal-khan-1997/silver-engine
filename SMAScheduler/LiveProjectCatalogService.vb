@@ -11,7 +11,7 @@ Public Class LiveProjectCatalogService
             New LiveProjectItem With {.ProjectCode = "LIVE-1003", .ProjectName = "SMA Commercial Block", .ClientName = "Client C", .VersionNumber = "1.0", .ProjectSize = "Large"},
             New LiveProjectItem With {.ProjectCode = "LIVE-1004", .ProjectName = "SMA Masterplan Estate", .ClientName = "Client D", .VersionNumber = "1.0", .ProjectSize = "Very Large"},
             New LiveProjectItem With {.ProjectCode = "LIVE-2001", .ProjectName = "SMA Feedback Change", .ClientName = "Client Feedback", .VersionNumber = "1.0", .ProjectSize = "Small", .TemplateName = "Feedback Change"},
-            New LiveProjectItem With {.ProjectCode = "LIVE-2002", .ProjectName = "SMA BRE Neighbor/ROL Update", .ClientName = "Client Update", .VersionNumber = "1.0", .ProjectSize = "Small", .TemplateName = "BRE Neighbor/ROL Update"}
+            New LiveProjectItem With {.ProjectCode = "LIVE-2002", .ProjectName = "SMA - BRE Within Update Template", .ClientName = "Client Update", .VersionNumber = "1.0", .ProjectSize = "Small", .TemplateName = "BRE Neighbor/ROL Update"}
         }
     End Sub
 
