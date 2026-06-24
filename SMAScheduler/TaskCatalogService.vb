@@ -92,6 +92,39 @@ Public Class TaskCatalogService
         }
     End Function
 
+    Public Function LoadTemplateTasks(templateName As String, projectSize As String) As List(Of TaskCatalogItem)
+        Dim normalizedTemplate = If(templateName, "").Trim()
+        Dim allTasks = LoadAvailableTasks()
+        Dim templateTasks As IEnumerable(Of TaskCatalogItem)
+
+        If normalizedTemplate.IndexOf("feedback", StringComparison.OrdinalIgnoreCase) >= 0 Then
+            templateTasks = allTasks.Where(Function(task) IsFeedbackTask(task))
+        Else
+            templateTasks = allTasks.Where(Function(task) Not IsFeedbackTask(task) AndAlso Not IsUpdateOnlyTask(task))
+        End If
+
+        Return templateTasks.
+            Where(Function(task) task.HoursForSize(projectSize) > 0D).
+            OrderBy(Function(task) task.DatabaseTaskId).
+            ToList()
+    End Function
+
+    Private Shared Function IsFeedbackTask(task As TaskCatalogItem) As Boolean
+        If task Is Nothing Then
+            Return False
+        End If
+
+        Return ContainsFeedback(task.Title) OrElse ContainsFeedback(task.Predecessor) OrElse ContainsFeedback(task.Summary)
+    End Function
+
+    Private Shared Function ContainsFeedback(value As String) As Boolean
+        Return Not String.IsNullOrWhiteSpace(value) AndAlso value.IndexOf("feedback", StringComparison.OrdinalIgnoreCase) >= 0
+    End Function
+
+    Private Shared Function IsUpdateOnlyTask(task As TaskCatalogItem) As Boolean
+        Return task IsNot Nothing AndAlso task.DatabaseTaskId >= 300
+    End Function
+
     Private Function Task(id As Integer, title As String, predecessor As String, smallHours As Decimal, mediumHours As Decimal, largeHours As Decimal, veryLargeHours As Decimal, assignee As String, moduleId As Integer) As TaskCatalogItem
         Return New TaskCatalogItem With {
             .DatabaseTaskId = id,

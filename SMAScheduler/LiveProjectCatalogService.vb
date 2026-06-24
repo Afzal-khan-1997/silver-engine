@@ -9,7 +9,8 @@ Public Class LiveProjectCatalogService
             New LiveProjectItem With {.ProjectCode = "LIVE-1001", .ProjectName = "SMA Villa Extension", .ClientName = "Client A", .VersionNumber = "1.0", .ProjectSize = "Small"},
             New LiveProjectItem With {.ProjectCode = "LIVE-1002", .ProjectName = "SMA Apartment Redevelopment", .ClientName = "Client B", .VersionNumber = "1.0", .ProjectSize = "Medium"},
             New LiveProjectItem With {.ProjectCode = "LIVE-1003", .ProjectName = "SMA Commercial Block", .ClientName = "Client C", .VersionNumber = "1.0", .ProjectSize = "Large"},
-            New LiveProjectItem With {.ProjectCode = "LIVE-1004", .ProjectName = "SMA Masterplan Estate", .ClientName = "Client D", .VersionNumber = "1.0", .ProjectSize = "Very Large"}
+            New LiveProjectItem With {.ProjectCode = "LIVE-1004", .ProjectName = "SMA Masterplan Estate", .ClientName = "Client D", .VersionNumber = "1.0", .ProjectSize = "Very Large"},
+            New LiveProjectItem With {.ProjectCode = "LIVE-2001", .ProjectName = "SMA Feedback Change", .ClientName = "Client Feedback", .VersionNumber = "1.0", .ProjectSize = "Small", .TemplateName = "Feedback Change"}
         }
     End Sub
 
@@ -22,7 +23,8 @@ Public Class LiveProjectCatalogService
                                         Return project.ProjectCode.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 OrElse
                                             project.ProjectName.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 OrElse
                                             project.ClientName.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 OrElse
-                                            project.ProjectSize.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0
+                                            project.ProjectSize.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 OrElse
+                                            project.TemplateName.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0
                                     End Function)
         End If
 
@@ -36,11 +38,13 @@ Public Class LiveProjectItem
     Public Property ClientName As String = ""
     Public Property VersionNumber As String = "1.0"
     Public Property ProjectSize As String = "Small"
+    Public Property TemplateName As String = "New Project"
 
     Public ReadOnly Property DisplayText As String
         Get
             Dim codePart = If(String.IsNullOrWhiteSpace(ProjectCode), "", ProjectCode.Trim() & " - ")
-            Return codePart & ProjectName & " (" & ProjectSize & ")"
+            Dim templatePart = If(String.Equals(TemplateName, "New Project", StringComparison.OrdinalIgnoreCase), "", " - " & TemplateName)
+            Return codePart & ProjectName & " (" & ProjectSize & templatePart & ")"
         End Get
     End Property
 

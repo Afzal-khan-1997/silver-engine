@@ -50,8 +50,11 @@ Public Class SMASchedulerForm
         SelectProjectSize(liveProject.ProjectSize)
 
         Dim projectSize = CStr(_projectSizeSelector.SelectedItem)
-        ClearPlanningInputDisplays()
-        RecalculateAndRefresh("Project shell loaded for " & projectSize & " project")
+        LoadTemplateTasks(liveProject.TemplateName, projectSize)
+        If _tasks.Count = 0 Then
+            ClearPlanningInputDisplays()
+        End If
+        RecalculateAndRefresh(liveProject.TemplateName & " template loaded for " & projectSize & " project")
     End Sub
 
     Public Sub LoadProjectSnapshot(snapshot As ProjectSnapshot)
@@ -605,6 +608,49 @@ Public Class SMASchedulerForm
         SelectTask(nextId)
         RecalculateAndRefresh("Task added from allocation panel")
     End Sub
+
+    Private Sub LoadTemplateTasks(templateName As String, projectSize As String)
+        Dim templateTasks = _taskCatalogService.LoadTemplateTasks(templateName, projectSize)
+        Dim startDate = NextWorkingDate(Date.Today)
+        Dim totalTemplateHours = 0D
+
+        _tasks.Clear()
+        For Each catalogTask In templateTasks
+            Dim requestedHours = catalogTask.HoursForSize(projectSize)
+            If requestedHours <= 0D Then
+                Continue For
+            End If
+
+            totalTemplateHours += requestedHours
+            _tasks.Add(CreateTemplateScheduleTask(catalogTask, _tasks.Count + 1, requestedHours, startDate))
+        Next
+
+        _totalProjectHours.Value = ClampDecimal(totalTemplateHours, _totalProjectHours.Minimum, _totalProjectHours.Maximum)
+        _resourcesNeeded.Value = 0D
+        If _tasks.Count > 0 Then
+            SelectTask(1)
+        End If
+    End Sub
+
+    Private Function CreateTemplateScheduleTask(catalogTask As TaskCatalogItem, taskId As Integer, requestedHours As Decimal, startDate As Date) As ScheduleTask
+        Return New ScheduleTask With {
+            .TaskId = taskId,
+            .DatabaseTaskId = catalogTask.DatabaseTaskId,
+            .TaskName = catalogTask.Title,
+            .StartDate = startDate,
+            .AssignmentDate = startDate,
+            .DurationDays = DurationFromHours(requestedHours),
+            .PercentComplete = 0,
+            .Predecessors = If(taskId <= 1, "", (taskId - 1).ToString(CultureInfo.InvariantCulture)),
+            .DependencyType = "FS",
+            .AssignedTo = "",
+            .ResourceNames = "",
+            .ResourceAllocations = "",
+            .DailyResourceAllocations = "",
+            .ResourceHours = 0D,
+            .ModuleId = catalogTask.ModuleId
+        }
+    End Function
 
     Private Sub DeleteTask(sender As Object, e As EventArgs)
         Dim selected = SelectedTask()
