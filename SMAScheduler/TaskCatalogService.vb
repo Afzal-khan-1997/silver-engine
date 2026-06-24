@@ -119,19 +119,24 @@ Public Class TaskCatalogService
     Private Function LoadBreNeighborRolUpdateTasks() As List(Of TaskCatalogItem)
         Return New List(Of TaskCatalogItem) From {
             TemplateTask(4001, "Scope", 0.5D, "Admin Resp", 1),
-            TemplateTask(4002, "Photos Rectification (PhotoToPlan)", 0.5D, "Admin Resp", 1),
-            TemplateTask(4003, "3D Modelling", 4D, "Modeling Resp", 4),
-            TemplateTask(4004, "3D Modelling QC", 0.25D, "QC Resp", 12),
-            TemplateTask(4005, "3D Modelling QC Corrections", 0.75D, "Modeling Resp", 12),
-            TemplateTask(4006, "3D Modelling Definiton", 0.5D, "Modeling Resp", 13),
-            TemplateTask(4007, "Document list preparation", 0.25D, "Admin Resp", 1),
-            TemplateTask(4008, "LightVidia Analysis", 0.5D, "Modeling Resp", 13),
-            TemplateTask(4009, "LightVidia Analysis QC", 0.25D, "QC Resp", 12),
-            TemplateTask(4010, "LightVidia QC Corrections", 0.25D, "Modeling Resp", 12),
-            TemplateTask(4011, "3D Rendering for 3D WGK", 0.5D, "Modeling Resp", 4),
-            TemplateTask(4012, "Report Template Preparation", 0.5D, "Admin Resp", 1),
-            TemplateTask(4013, "Report Template Preparation QC", 0.25D, "QC Resp", 1),
-            TemplateTask(4014, "Report Template Preparation QC Corrections", 0.5D, "Admin Resp", 1)
+            TemplateTask(4002, "Gathering of Inputs", 0.5D, "Customer Service", 5),
+            TemplateTask(4003, "Gathering of Inputs QC", 0.25D, "QC Resp", 12),
+            TemplateTask(4004, "Window Garden Key", 1D, "Admin Resp", 1),
+            TemplateTask(4005, "Window Garden Key QC", 0.5D, "QC Resp", 12),
+            TemplateTask(4006, "Window Garden Key QC Corrections", 0.5D, "Admin Resp", 12),
+            TemplateTask(4007, "Photos Rectification (PhotoToPlan)", 0.5D, "Admin Resp", 1),
+            TemplateTask(4008, "3D Modelling", 6D, "Modeling Resp", 4),
+            TemplateTask(4009, "3D Modelling QC", 0.5D, "QC Resp", 12),
+            TemplateTask(4010, "3D Modelling QC Corrections", 0.75D, "Modeling Resp", 12),
+            TemplateTask(4011, "3D Modelling Definiton", 0.5D, "Modeling Resp", 13),
+            TemplateTask(4012, "Document list preparation", 0.25D, "Admin Resp", 1),
+            TemplateTask(4013, "LightVidia Analysis & Window key Updates", 0.5D, "Modeling Resp", 13),
+            TemplateTask(4014, "LightVidia Analysis QC", 0.25D, "QC Resp", 12),
+            TemplateTask(4015, "LightVidia QC Corrections", 0.25D, "Modeling Resp", 12),
+            TemplateTask(4016, "3D Rendering for 3D WGK", 0.5D, "Modeling Resp", 4),
+            TemplateTask(4017, "Report Template Preparation", 0.5D, "Admin Resp", 1),
+            TemplateTask(4018, "Report Template Preparation QC", 0.25D, "QC Resp", 1),
+            TemplateTask(4019, "Report Template Preparation QC Corrections", 0.5D, "Admin Resp", 1)
         }
     End Function
 
