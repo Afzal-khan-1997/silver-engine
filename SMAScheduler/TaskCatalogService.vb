@@ -94,6 +94,13 @@ Public Class TaskCatalogService
 
     Public Function LoadTemplateTasks(templateName As String, projectSize As String) As List(Of TaskCatalogItem)
         Dim normalizedTemplate = If(templateName, "").Trim()
+        If IsSmaNewProjectTemplate(normalizedTemplate) Then
+            Return LoadSmaNewProjectTasks().
+                Where(Function(task) task.HoursForSize(projectSize) > 0D).
+                OrderBy(Function(task) task.DatabaseTaskId).
+                ToList()
+        End If
+
         If IsBreNeighborRolUpdateTemplate(normalizedTemplate) Then
             Return LoadBreNeighborRolUpdateTasks().
                 Where(Function(task) task.HoursForSize(projectSize) > 0D).
@@ -114,6 +121,30 @@ Public Class TaskCatalogService
             Where(Function(task) task.HoursForSize(projectSize) > 0D).
             OrderBy(Function(task) task.DatabaseTaskId).
             ToList()
+    End Function
+
+    Private Function LoadSmaNewProjectTasks() As List(Of TaskCatalogItem)
+        Return New List(Of TaskCatalogItem) From {
+            TemplateTask(3001, "Scope", 1.5D, "Admin Resp", 1),
+            TemplateTask(3002, "Gathering of Inputs", 0.5D, "Customer Service", 5),
+            TemplateTask(3003, "Gathering of Inputs QC", 0.25D, "QC Resp", 12),
+            TemplateTask(3004, "Window Garden Key", 1.5D, "Admin Resp", 1),
+            TemplateTask(3005, "Window Garden Key QC", 0.5D, "QC Resp", 12),
+            TemplateTask(3006, "Window Garden Key QC Corrections", 0.25D, "Admin Resp", 12),
+            TemplateTask(3007, "Photos Rectification (PhotoToPlan)", 1D, "Admin Resp", 1),
+            TemplateTask(3008, "3D Modelling", 16D, "Modeling Resp", 4),
+            TemplateTask(3009, "3D Modelling QC", 2D, "QC Resp", 12),
+            TemplateTask(3010, "3D Modelling QC Corrections", 1D, "Modeling Resp", 12),
+            TemplateTask(3011, "3D Modelling Definition", 0.5D, "Modeling Resp", 13),
+            TemplateTask(3012, "Document list preparation", 0.25D, "Admin Resp", 1),
+            TemplateTask(3013, "LightVidia Analysis & Window key Updates", 0.5D, "Modeling Resp", 13),
+            TemplateTask(3014, "LightVidia Analysis QC", 0.25D, "QC Resp", 12),
+            TemplateTask(3015, "LightVidia QC Corrections & Final Run", 0.25D, "Modeling Resp", 12),
+            TemplateTask(3016, "3D Rendering for 3D WGK", 0.5D, "Modeling Resp", 4),
+            TemplateTask(3017, "Report Template Preparation", 1D, "Admin Resp", 1),
+            TemplateTask(3018, "Report Template Preparation QC", 0.5D, "QC Resp", 1),
+            TemplateTask(3019, "Report Template Preparation QC Corrections", 0.25D, "Admin Resp", 1)
+        }
     End Function
 
     Private Function LoadBreNeighborRolUpdateTasks() As List(Of TaskCatalogItem)
@@ -147,6 +178,14 @@ Public Class TaskCatalogService
 
         Return templateName.IndexOf("bre", StringComparison.OrdinalIgnoreCase) >= 0 OrElse
             templateName.IndexOf("rol", StringComparison.OrdinalIgnoreCase) >= 0
+    End Function
+
+    Private Shared Function IsSmaNewProjectTemplate(templateName As String) As Boolean
+        If String.IsNullOrWhiteSpace(templateName) Then
+            Return True
+        End If
+
+        Return templateName.IndexOf("new project", StringComparison.OrdinalIgnoreCase) >= 0
     End Function
 
     Private Shared Function IsFeedbackTask(task As TaskCatalogItem) As Boolean

@@ -119,15 +119,15 @@ Partial Class SMAPlannerForm
         searchLabel.ForeColor = Color.FromArgb(CByte(75), CByte(85), CByte(99))
         searchLabel.Location = New Point(26, 120)
         searchLabel.Name = "searchLabel"
-        searchLabel.Size = New Size(113, 20)
+        searchLabel.Size = New Size(97, 20)
         searchLabel.TabIndex = 4
-        searchLabel.Text = "Find live project"
+        searchLabel.Text = "Find template"
         ' 
         ' _liveProjectSearchBox
         ' 
         _liveProjectSearchBox.Location = New Point(26, 144)
         _liveProjectSearchBox.Name = "_liveProjectSearchBox"
-        _liveProjectSearchBox.PlaceholderText = "Search by project, code, client or size"
+        _liveProjectSearchBox.PlaceholderText = "Search by template or size"
         _liveProjectSearchBox.Size = New Size(290, 27)
         _liveProjectSearchBox.TabIndex = 5
         ' 
@@ -137,9 +137,9 @@ Partial Class SMAPlannerForm
         selectorLabel.ForeColor = Color.FromArgb(CByte(75), CByte(85), CByte(99))
         selectorLabel.Location = New Point(336, 120)
         selectorLabel.Name = "selectorLabel"
-        selectorLabel.Size = New Size(83, 20)
+        selectorLabel.Size = New Size(69, 20)
         selectorLabel.TabIndex = 6
-        selectorLabel.Text = "Live project"
+        selectorLabel.Text = "Template"
         ' 
         ' _liveProjectSelector
         ' 
@@ -171,7 +171,7 @@ Partial Class SMAPlannerForm
         _liveProjectSizeLabel.Name = "_liveProjectSizeLabel"
         _liveProjectSizeLabel.Size = New Size(260, 34)
         _liveProjectSizeLabel.TabIndex = 9
-        _liveProjectSizeLabel.Text = "Detected size:"
+        _liveProjectSizeLabel.Text = "Template size:"
         _liveProjectSizeLabel.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' gridPanel

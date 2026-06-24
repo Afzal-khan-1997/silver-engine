@@ -87,16 +87,16 @@ Public Class SMAPlannerForm
     Private Sub UpdateLiveProjectSizeLabel()
         Dim selectedProject = SelectedLiveProject()
         If selectedProject Is Nothing Then
-            _liveProjectSizeLabel.Text = "No live project found"
+            _liveProjectSizeLabel.Text = "No template found"
             Return
         End If
 
-        _liveProjectSizeLabel.Text = "Detected size: " & selectedProject.ProjectSize
+        _liveProjectSizeLabel.Text = "Template size: " & selectedProject.ProjectSize
     End Sub
 
     Private Sub OpenNewProject(sender As Object, e As EventArgs)
         Using scheduler As New SMASchedulerForm()
-            scheduler.StartNewProject()
+            scheduler.LoadLiveProjectTemplate(LiveProjectCatalogService.CreateSmaNewProjectTemplate())
             FormTransitionService.ShowDialogWithMotion(Me, scheduler)
         End Using
         LoadProjectList()
@@ -105,7 +105,7 @@ Public Class SMAPlannerForm
     Private Sub OpenSelectedLiveProjectTemplate(sender As Object, e As EventArgs)
         Dim selectedProject = SelectedLiveProject()
         If selectedProject Is Nothing Then
-            MessageBox.Show(Me, "No live project is selected.", "Live Project", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            MessageBox.Show(Me, "No template is selected.", "Template", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Return
         End If
 
