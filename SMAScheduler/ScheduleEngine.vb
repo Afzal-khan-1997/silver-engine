@@ -282,8 +282,8 @@ Public Class ScheduleEngine
     End Function
 
     Private Function IsBlockedDate(value As Date) As Boolean
-        Return value.DayOfWeek = DayOfWeek.Sunday OrElse
-            (value.DayOfWeek = DayOfWeek.Saturday AndAlso Not IncludeSaturdays)
+        Return Not IncludeSaturdays AndAlso
+            (value.DayOfWeek = DayOfWeek.Saturday OrElse value.DayOfWeek = DayOfWeek.Sunday)
     End Function
 End Class
 

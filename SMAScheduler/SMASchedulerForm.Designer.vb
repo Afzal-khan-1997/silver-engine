@@ -345,9 +345,9 @@ Partial Class SMASchedulerForm
         _includeSaturdays.AutoSize = True
         _includeSaturdays.Location = New Point(166, 132)
         _includeSaturdays.Name = "_includeSaturdays"
-        _includeSaturdays.Size = New Size(89, 24)
+        _includeSaturdays.Size = New Size(128, 24)
         _includeSaturdays.TabIndex = 20
-        _includeSaturdays.Text = "Saturday"
+        _includeSaturdays.Text = "Weekend Plan"
         _includeSaturdays.UseVisualStyleBackColor = True
         ' 
         ' btnSchedulePlanner

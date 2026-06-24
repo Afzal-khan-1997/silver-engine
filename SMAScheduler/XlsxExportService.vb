@@ -44,7 +44,7 @@ Public Class XlsxExportService
         Dim rows As New List(Of List(Of Object)) From {
             New List(Of Object) From {"Capacity Planning"},
             New List(Of Object) From {"Month", monthStart.ToString("MMMM yyyy", CultureInfo.InvariantCulture)},
-            New List(Of Object) From {"Rule", "Max 8 hours per employee per day. Sundays are holidays. Saturdays are holidays unless enabled."},
+            New List(Of Object) From {"Rule", "Max 8 hours per employee per day. Weekends are holidays unless Weekend Plan is enabled."},
             New List(Of Object)()
         }
 
@@ -435,7 +435,8 @@ Public Class XlsxExportService
     End Function
 
     Private Function IsBlockedDate(currentDate As Date, includeSaturdays As Boolean) As Boolean
-        Return currentDate.DayOfWeek = DayOfWeek.Sunday OrElse (currentDate.DayOfWeek = DayOfWeek.Saturday AndAlso Not includeSaturdays)
+        Return Not includeSaturdays AndAlso
+            (currentDate.DayOfWeek = DayOfWeek.Saturday OrElse currentDate.DayOfWeek = DayOfWeek.Sunday)
     End Function
 
     Private Sub CreateWorkbook(filePath As String, sheets As Dictionary(Of String, List(Of List(Of Object))))

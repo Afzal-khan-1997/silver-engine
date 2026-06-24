@@ -1006,8 +1006,8 @@ Public Class SMASchedulerForm
     End Function
 
     Private Function IsBlockedScheduleDate(value As Date) As Boolean
-        Return value.DayOfWeek = DayOfWeek.Sunday OrElse
-            (value.DayOfWeek = DayOfWeek.Saturday AndAlso Not _includeSaturdays.Checked)
+        Return Not _includeSaturdays.Checked AndAlso
+            (value.DayOfWeek = DayOfWeek.Saturday OrElse value.DayOfWeek = DayOfWeek.Sunday)
     End Function
 
     Private Function NormalizeResourceList(value As String) As String

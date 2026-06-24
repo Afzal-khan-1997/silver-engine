@@ -11,7 +11,7 @@ SMA Scheduler is a colorful VB.NET Windows Forms planner inspired by the core Mi
 - Employee assignment dropdown using the employee names provided from the database screenshot.
 - Task assignment fields for assigned employee, assignment date, and planned resource hours.
 - Excel export from the Save button using `ProjectName_Version.xlsx`.
-- Monthly resource-hours Excel export with employee/date allocation, 8-hour daily cap, Sunday holidays, and optional Saturdays.
+- Monthly resource-hours Excel export with employee/date allocation, 8-hour daily cap, and optional Weekend Plan scheduling for Saturdays and Sundays.
 - Automatic finish-date calculation from start date and duration.
 - Finish-to-start dependency behavior using predecessor task ids.
 - Gantt-style visual timeline with weekend shading, today marker, progress bars, milestones, and dependency arrows.
