@@ -212,8 +212,6 @@ Partial Class SMASchedulerForm
         headerPanel.Controls.Add(_versionNumber)
         headerPanel.Controls.Add(totalHoursLabel)
         headerPanel.Controls.Add(_totalProjectHours)
-        headerPanel.Controls.Add(taskCatalogLabel)
-        headerPanel.Controls.Add(_taskCatalogSelector)
         headerPanel.Controls.Add(projectSizeLabel)
         headerPanel.Controls.Add(_projectSizeSelector)
         headerPanel.Controls.Add(_includeSaturdays)
@@ -326,7 +324,7 @@ Partial Class SMASchedulerForm
         ' 
         projectSizeLabel.AutoSize = True
         projectSizeLabel.ForeColor = Color.DimGray
-        projectSizeLabel.Location = New Point(460, 108)
+        projectSizeLabel.Location = New Point(13, 108)
         projectSizeLabel.Name = "projectSizeLabel"
         projectSizeLabel.Size = New Size(86, 20)
         projectSizeLabel.TabIndex = 3
@@ -336,7 +334,7 @@ Partial Class SMASchedulerForm
         ' 
         _projectSizeSelector.DropDownStyle = ComboBoxStyle.DropDownList
         _projectSizeSelector.FormattingEnabled = True
-        _projectSizeSelector.Location = New Point(460, 132)
+        _projectSizeSelector.Location = New Point(13, 132)
         _projectSizeSelector.Margin = New Padding(3, 4, 3, 4)
         _projectSizeSelector.Name = "_projectSizeSelector"
         _projectSizeSelector.Size = New Size(134, 28)
@@ -345,7 +343,7 @@ Partial Class SMASchedulerForm
         ' _includeSaturdays
         ' 
         _includeSaturdays.AutoSize = True
-        _includeSaturdays.Location = New Point(623, 132)
+        _includeSaturdays.Location = New Point(166, 132)
         _includeSaturdays.Name = "_includeSaturdays"
         _includeSaturdays.Size = New Size(89, 24)
         _includeSaturdays.TabIndex = 20

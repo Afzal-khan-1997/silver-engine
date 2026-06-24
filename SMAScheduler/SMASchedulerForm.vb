@@ -143,6 +143,12 @@ Public Class SMASchedulerForm
     End Sub
 
     Private Sub ApplySchedulerHeaderLayout()
+        If taskCatalogLabel.Parent IsNot Nothing Then
+            taskCatalogLabel.Parent.Controls.Remove(taskCatalogLabel)
+        End If
+        If _taskCatalogSelector.Parent IsNot Nothing Then
+            _taskCatalogSelector.Parent.Controls.Remove(_taskCatalogSelector)
+        End If
         If resourcesNeededLabel.Parent IsNot Nothing Then
             resourcesNeededLabel.Parent.Controls.Remove(resourcesNeededLabel)
         End If
@@ -170,7 +176,7 @@ Public Class SMASchedulerForm
         btnSchedulePlanner.BackColor = theme.Action
         btnSchedulePlanner.ForeColor = Color.White
 
-        For Each label In {projectLabel, versionLabel, totalHoursLabel, taskCatalogLabel, projectSizeLabel, resourcesNeededLabel}
+        For Each label In {projectLabel, versionLabel, totalHoursLabel, projectSizeLabel, resourcesNeededLabel}
             If label IsNot Nothing Then
                 label.ForeColor = theme.MutedText
             End If
@@ -560,12 +566,6 @@ Public Class SMASchedulerForm
     End Sub
 
     Private Sub AddTask(sender As Object, e As EventArgs)
-        Dim selectedCatalogTask = TryCast(_taskCatalogSelector.SelectedItem, TaskCatalogItem)
-        If selectedCatalogTask IsNot Nothing Then
-            AddTaskFromCatalog(selectedCatalogTask)
-            Return
-        End If
-
         Dim nextId = If(_tasks.Count = 0, 1, _tasks.Max(Function(t) t.TaskId) + 1)
         Dim startDate = NextWorkingDate(If(_tasks.Count = 0, Date.Today, _tasks.Max(Function(t) t.FinishDate).AddDays(1)))
         _tasks.Add(New ScheduleTask With {
